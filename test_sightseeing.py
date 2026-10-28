@@ -255,6 +255,28 @@ def test_html_img_src_separate_dirs(tmp_path):
     assert "%2F" not in text
 
 
+def test_html_img_src_uses_forward_slashes_on_windows(monkeypatch, tmp_path):
+    """Regression: on Windows, os.path.relpath produces backslashes, which
+    urllib.parse.quote encodes as %5C — browsers can't resolve those in
+    file:// URLs. The src must always use forward slashes."""
+    import ntpath
+    monkeypatch.setattr(ss.os.path, "relpath",
+                        lambda p, start: ntpath.relpath(p, start))
+    sights = [
+        ss.Sight(qid="Q3", label="C",
+                 image_path=str(tmp_path / "sightseeing_images" / "Q3_c.jpg")),
+    ]
+    (tmp_path / "sightseeing_images").mkdir()
+    (tmp_path / "sightseeing_images" / "Q3_c.jpg").write_bytes(b"fake")
+    out = ss.write_html_report(sights, 0.0, 0.0, 100.0,
+                               tmp_path / "report.html",
+                               tmp_path / "sightseeing_images")
+    text = out.read_text(encoding="utf-8")
+    assert 'src="sightseeing_images/Q3_c.jpg"' in text
+    assert "%5C" not in text
+    assert "\\" not in text
+
+
 def test_print_summary_no_sights(capsys):
     ss.print_summary(0.0, 0.0, 100.0, [])
     out = capsys.readouterr().out
