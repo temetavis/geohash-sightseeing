@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geohash-sightseeing"
+version = "1.0.0"
+description = "Find sightseeing targets near a geohash point using Wikidata and Wikimedia Commons"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "requests>=2.28",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+sightseeing = "sightseeing:main"
+
+[tool.setuptools]
+py-modules = ["sightseeing"]
