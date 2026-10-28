@@ -347,7 +347,7 @@ document.querySelectorAll('.card img').forEach(function (img) {{
 def sight_card(s: Sight, lat: float, lon: float, image_dir: Path, report_dir: Path) -> str:
     if s.image_path:
         src = os.path.relpath(s.image_path, report_dir)
-        src = urllib.parse.quote(src)
+        src = urllib.parse.quote(src, safe="/")
         media = f'<img src="{src}" alt="{html.escape(s.label)}" loading="lazy">'
     else:
         media = '<div class="noimg">no image</div>'
